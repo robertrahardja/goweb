@@ -82,3 +82,17 @@ func (db *Database) UpsertUser(ctx context.Context, user *models.User) error {
 	`, user.Email, user.Name, user.Picture)
 	return err
 }
+//
+// In db/db.go
+func (db *Database) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+    var user models.User
+    err := db.conn.QueryRow(ctx, `
+        SELECT email, name, picture 
+        FROM users 
+        WHERE email = $1
+    `, email).Scan(&user.Email, &user.Name, &user.Picture)
+    if err != nil {
+        return nil, err
+    }
+    return &user, nil
+}

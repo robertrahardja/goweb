@@ -105,18 +105,22 @@ func (h *Handler) handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) requireAuth(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("auth_token")
-		if err != nil {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
+    return func(w http.ResponseWriter, r *http.Request) {
+        cookie, err := r.Cookie("auth_token")
+        if err != nil {
+            http.Redirect(w, r, "/login", http.StatusSeeOther)
+            return
+        }
 
-		user := &models.User{
-			Email: cookie.Value,
-		}
+        // Load full user data from database
+        user, err := h.db.GetUserByEmail(r.Context(), cookie.Value)
+        if err != nil {
+            h.logger.Printf("Error loading user data: %v", err)
+            http.Redirect(w, r, "/login", http.StatusSeeOther)
+            return
+        }
 
-		ctx := context.WithValue(r.Context(), "user", user)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	}
+        ctx := context.WithValue(r.Context(), "user", user)
+        next.ServeHTTP(w, r.WithContext(ctx))
+    }
 }
