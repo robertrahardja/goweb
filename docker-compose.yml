@@ -1,0 +1,16 @@
+services:
+  goweb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - HOST=${HOST:-http://localhost:3000}
+    env_file:
+      - .env
+    restart: unless-stopped

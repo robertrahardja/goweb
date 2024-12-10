@@ -1,0 +1,106 @@
+package templates
+
+import (
+    "fmt"
+    "rr/web/internal/models"
+)
+
+templ Hello(name string, records []models.Record, user *models.User) {
+    <html>
+        <head>
+            <title>Hello</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                }
+                .header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding: 10px;
+                    background-color: #f8f9fa;
+                    border-radius: 5px;
+                }
+                .user-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .user-avatar {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                }
+                table {
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    width: 100%;
+                }
+                th, td {
+                    border: 1px solid #ddd;
+                    padding: 12px;
+                    text-align: left;
+                }
+                th {
+                    background-color: #f2f2f2;
+                }
+                tr:hover {
+                    background-color: #f5f5f5;
+                }
+                .auth-button {
+                    display: inline-block;
+                    padding: 8px 16px;
+                    background-color: #4285f4;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 4px;
+                    margin-left: 10px;
+                }
+                .auth-button:hover {
+                    background-color: #357abd;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Hello, {name}!</h1>
+                <div class="user-info">
+                    if user != nil {
+                        <img src={user.Picture} alt="User avatar" class="user-avatar" />
+                        <span>{user.Email}</span>
+                        <a href="/logout" class="auth-button">Logout</a>
+                    } else {
+                        <a href="/login" class="auth-button">Login with Google</a>
+                    }
+                </div>
+            </div>
+            if user != nil {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        for _, record := range records {
+                            <tr>
+                                <td>{fmt.Sprint(record.ID)}</td>
+                                <td>{record.Name}</td>
+                                <td>{fmt.Sprintf("%.2f", record.Value)}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            } else {
+                <div style="text-align: center; margin-top: 50px;">
+                    <h2>Please log in to view the data</h2>
+                </div>
+            }
+        </body>
+    </html>
+}
